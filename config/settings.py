@@ -26,6 +26,7 @@ ALLOWED_HOSTS = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
+    "https://*.onrender.com",
     "https://*.vercel.app",
     "https://surajportfolio.com",
     "https://www.surajportfolio.com",
