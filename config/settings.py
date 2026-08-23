@@ -21,6 +21,7 @@ ALLOWED_HOSTS = [
     for h in os.environ.get(
         "DJANGO_ALLOWED_HOSTS",
         "localhost,127.0.0.1,.vercel.app,surajportfolio.com,www.surajportfolio.com",
+        "portfolio-g78n.onrender.com",
     ).split(",")
     if h.strip()
 ]
