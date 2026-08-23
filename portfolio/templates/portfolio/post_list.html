@@ -1,0 +1,54 @@
+{% extends "portfolio/base.html" %}
+
+{% block title %}Writing — {{ profile.full_name }}{% endblock %}
+{% block description %}Notes on building with Django, React and LLM-backed applications.{% endblock %}
+{% block og_title %}Writing — {{ profile.full_name }}{% endblock %}
+
+{% block content %}
+<section class="page-head">
+  <div class="wrap">
+    <p class="sec-kicker reveal">WRITING</p>
+    <h1 class="page-title reveal">Notes on what I build</h1>
+    <p class="sec-lead reveal">Write-ups of problems I've hit and how I worked through them — mostly Django, React and LLM-backed applications.</p>
+
+    {% if post_tags %}
+    <div class="filters reveal">
+      <a class="filter{% if not active_tag %} is-active{% endif %}" href="{% url 'post_list' %}">All</a>
+      {% for tag in post_tags %}
+        <a class="filter{% if active_tag == tag %} is-active{% endif %}" href="?tag={{ tag.slug }}">{{ tag.name }}</a>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+    <div class="post-grid">
+      {% for post in posts %}
+      <article class="card post-card reveal">
+        <div class="post-meta">
+          <time datetime="{{ post.published_at|date:'Y-m-d' }}">{{ post.published_at|date:"j M Y" }}</time>
+          <span aria-hidden="true">·</span>
+          <span>{{ post.reading_time }} min read</span>
+          {% if not post.published %}<span class="draft-flag">Draft</span>{% endif %}
+        </div>
+        <h2><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h2>
+        <p class="post-excerpt">{{ post.excerpt }}</p>
+        {% if post.tags.all %}
+        <ul class="chips">
+          {% for tag in post.tags.all %}<li class="chip">{{ tag.name }}</li>{% endfor %}
+        </ul>
+        {% endif %}
+        <a class="post-more" href="{{ post.get_absolute_url }}">Read <span class="arrow">&rarr;</span></a>
+      </article>
+      {% empty %}
+      <div class="empty-state reveal">
+        <h2>Nothing published yet</h2>
+        <p class="muted">First post is on its way. In the meantime, the projects on the <a href="/#projects">home page</a> show what I've been building.</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

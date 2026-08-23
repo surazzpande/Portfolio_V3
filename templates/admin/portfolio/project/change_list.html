@@ -1,0 +1,12 @@
+{% extends "admin/change_list.html" %}
+
+{% block object-tools-items %}
+  <li>
+    <a href="{% url 'admin:portfolio_project_sync_github' %}" class="addlink"
+       style="background:#8289FF;color:#0a0a0b;font-weight:600"
+       title="Fetch new repositories from your GitHub accounts. New ones arrive as drafts.">
+      Sync from GitHub
+    </a>
+  </li>
+  {{ block.super }}
+{% endblock %}

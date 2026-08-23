@@ -1,0 +1,90 @@
+{% load static %}
+
+<div class="dash">
+
+  <div class="dash-cards">
+    {% for card in cards %}
+    <a class="dash-card{% if card.urgent %} is-urgent{% endif %}" href="{{ card.url }}">
+      <span class="dash-value">{{ card.value }}</span>
+      <span class="dash-label">{{ card.label }}</span>
+      <span class="dash-sub">{{ card.sub }}</span>
+    </a>
+    {% endfor %}
+  </div>
+
+  <div class="dash-actions">
+    <a class="dash-btn dash-btn-primary" href="{% url 'admin:portfolio_project_sync_github' %}">Sync from GitHub</a>
+    <a class="dash-btn" href="/admin/portfolio/project/add/">New project</a>
+    <a class="dash-btn" href="/admin/portfolio/post/add/">New post</a>
+    <a class="dash-btn" href="/admin/portfolio/certification/add/">New certification</a>
+    <a class="dash-btn" href="/" target="_blank" rel="noopener">View site &#8599;</a>
+  </div>
+
+  {% if last_sync %}
+    <p class="dash-note{% if sync_stale %} is-warn{% endif %}">
+      GitHub last synced {{ last_sync|timesince }} ago.
+      {% if sync_stale %}Worth running a sync.{% endif %}
+    </p>
+  {% else %}
+    <p class="dash-note is-warn">GitHub has never been synced. Use the button above to pull in your repositories.</p>
+  {% endif %}
+
+  <div class="dash-cols">
+
+    <section class="dash-panel">
+      <h2>
+        Recent messages
+        {% if unread %}<span class="dash-pill">{{ unread }} unread</span>{% endif %}
+      </h2>
+      {% if recent_messages %}
+      <ul class="dash-list">
+        {% for msg in recent_messages %}
+        <li{% if not msg.is_read %} class="is-unread"{% endif %}>
+          <a href="/admin/portfolio/contactmessage/{{ msg.pk }}/change/">
+            <strong>{{ msg.name }}</strong>
+            <span class="dash-meta">{{ msg.email }} · {{ msg.received_at|timesince }} ago</span>
+            <span class="dash-excerpt">{{ msg.message|truncatechars:90 }}</span>
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="dash-empty">No messages yet. They appear here the moment someone uses your contact form.</p>
+      {% endif %}
+    </section>
+
+    <section class="dash-panel">
+      <h2>Waiting on you</h2>
+
+      {% if draft_projects %}
+      <h3 class="dash-subhead">Draft projects</h3>
+      <ul class="dash-list dash-list-compact">
+        {% for project in draft_projects %}
+        <li><a href="/admin/portfolio/project/{{ project.pk }}/change/">
+          {{ project.title }}
+          <span class="dash-meta">needs a problem &amp; solution before publishing</span>
+        </a></li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+
+      {% if in_progress %}
+      <h3 class="dash-subhead">Currently studying</h3>
+      <ul class="dash-list dash-list-compact">
+        {% for cert in in_progress %}
+        <li><a href="/admin/portfolio/certification/{{ cert.pk }}/change/">
+          {{ cert.name }}
+          <span class="dash-progress"><span style="width: {{ cert.clamped_progress }}%"></span></span>
+          <span class="dash-meta">{{ cert.clamped_progress }}% — update as you go</span>
+        </a></li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+
+      {% if not draft_projects and not in_progress %}
+      <p class="dash-empty">Nothing pending. Drafts and in-progress courses show up here.</p>
+      {% endif %}
+    </section>
+
+  </div>
+</div>

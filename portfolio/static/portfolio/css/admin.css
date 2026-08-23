@@ -1,0 +1,230 @@
+/* =========================================================
+   Admin theme — matches the public site.
+
+   Django 5 exposes its colours as CSS variables, so most of the theming is
+   just redefining those. The dashboard styles below are additional.
+   ========================================================= */
+
+:root,
+html[data-theme="light"],
+html[data-theme="dark"] {
+  --primary: #8289ff;
+  --primary-fg: #0a0a0b;
+
+  --secondary: #8289ff;
+  --accent: #8289ff;
+
+  --body-fg: #f0f0f3;
+  --body-bg: #0a0a0b;
+  --body-quiet-color: #aeaeba;
+  --body-loud-color: #ffffff;
+
+  --header-color: #f0f0f3;
+  --header-branding-color: #8289ff;
+  --header-bg: #111114;
+  --header-link-color: #f0f0f3;
+
+  --breadcrumbs-fg: #aeaeba;
+  --breadcrumbs-link-fg: #f0f0f3;
+  --breadcrumbs-bg: #111114;
+
+  --link-fg: #8289ff;
+  --link-hover-color: #a5abff;
+  --link-selected-fg: #a5abff;
+
+  --hairline-color: rgba(255, 255, 255, 0.12);
+  --border-color: rgba(255, 255, 255, 0.16);
+
+  --error-fg: #f87171;
+  --message-success-bg: rgba(74, 222, 128, 0.14);
+  --message-warning-bg: rgba(245, 176, 65, 0.14);
+  --message-error-bg: rgba(248, 113, 113, 0.14);
+
+  --darkened-bg: #111114;
+  --selected-bg: #1a1a1f;
+  --selected-row: rgba(130, 137, 255, 0.12);
+
+  --button-fg: #0a0a0b;
+  --button-bg: #8289ff;
+  --button-hover-bg: #6f77ff;
+  --default-button-bg: #8289ff;
+  --default-button-hover-bg: #6f77ff;
+  --close-button-bg: #2a2a32;
+  --close-button-hover-bg: #3a3a44;
+  --delete-button-bg: #b03a3a;
+  --delete-button-hover-bg: #c94a4a;
+
+  --object-tools-bg: #2a2a32;
+  --object-tools-fg: #f0f0f3;
+  --object-tools-hover-bg: #3a3a44;
+
+  --font-family-primary: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --font-family-monospace: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+body { background: var(--body-bg); color: var(--body-fg); }
+
+/* ---------- Branding ---------- */
+
+#site-name a { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.admin-badge {
+  display: grid; place-items: center; width: 28px; height: 28px;
+  border-radius: 8px; font-size: 12px; font-weight: 700; color: #0a0a0b;
+  background: linear-gradient(135deg, #8289ff, rgba(130, 137, 255, 0.6));
+}
+.admin-wordmark { font-weight: 600; color: #f0f0f3; font-size: 17px; }
+.admin-viewsite { color: #aeaeba; font-size: 13px; }
+.admin-viewsite:hover { color: #8289ff; }
+
+#header { border-bottom: 1px solid var(--border-color); }
+
+/* ---------- Modules ---------- */
+
+.module, .inline-group, .submit-row, .dashboard #content-related .module {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+}
+.module caption, .module h2, .inline-group h2 {
+  background: transparent;
+  color: #8289ff;
+  font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
+  border-bottom: 1px solid var(--border-color);
+}
+
+thead th { background: transparent; color: #aeaeba; }
+tbody tr:hover { background: rgba(255, 255, 255, 0.035); }
+
+input[type=text], input[type=email], input[type=url], input[type=password],
+input[type=number], textarea, select {
+  background: #0a0a0b;
+  border: 1px solid var(--border-color);
+  color: #f0f0f3;
+  border-radius: 8px;
+}
+input:focus, textarea:focus, select:focus {
+  border-color: #8289ff;
+  box-shadow: 0 0 0 3px rgba(130, 137, 255, 0.18);
+  outline: none;
+}
+
+.button, input[type=submit], .submit-row input, a.button { border-radius: 999px; font-weight: 600; }
+.object-tools a { border-radius: 999px; }
+
+.help, .helptext, div.help { color: #8c8c98; }
+
+/* =========================================================
+   Dashboard
+   ========================================================= */
+
+.dash-greeting { font-size: 26px; font-weight: 600; margin: 26px 0 22px; letter-spacing: -0.02em; }
+
+.dash { margin-bottom: 34px; }
+
+.dash-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.dash-card {
+  display: flex; flex-direction: column; gap: 2px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  text-decoration: none;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+.dash-card:hover { border-color: rgba(255, 255, 255, 0.3); transform: translateY(-2px); }
+.dash-card:link, .dash-card:visited { color: inherit; }
+.dash-list a:link, .dash-list a:visited { color: #f0f0f3; }
+.dash-card.is-urgent { border-color: rgba(130, 137, 255, 0.55); background: rgba(130, 137, 255, 0.09); }
+
+.dash-value { font-size: 32px; font-weight: 600; color: #8289ff; line-height: 1.1; letter-spacing: -0.02em; }
+.dash-label { font-size: 13.5px; color: #f0f0f3; }
+.dash-sub { font-family: var(--font-family-monospace); font-size: 10.5px; color: #8c8c98; }
+
+.dash-actions { display: flex; flex-wrap: wrap; gap: 9px; margin-bottom: 14px; }
+.dash-btn,
+.dash-btn:link,
+.dash-btn:visited {
+  padding: 9px 17px; border-radius: 999px; font-size: 13.5px;
+  border: 1px solid var(--border-color); color: #f0f0f3; text-decoration: none;
+  transition: background-color 0.18s ease, border-color 0.18s ease;
+}
+.dash-btn:hover { background: rgba(255, 255, 255, 0.07); color: #ffffff; }
+
+/* The admin sets a global link colour, so these need the same specificity. */
+.dash-btn-primary,
+.dash-btn-primary:link,
+.dash-btn-primary:visited {
+  background: #8289ff; border-color: #8289ff; color: #0a0a0b; font-weight: 600;
+}
+.dash-btn-primary:hover { background: #6f77ff; color: #0a0a0b; }
+
+/* Same problem on the changelist "Sync from GitHub" tool button. */
+.object-tools a.addlink[href$="sync-github/"],
+.object-tools a.addlink[href$="sync-github/"]:link,
+.object-tools a.addlink[href$="sync-github/"]:visited { color: #0a0a0b; }
+
+/* The dashboard has its own h1, so hide the admin's index title above it. */
+.dashboard #content > h1:not(.dash-greeting) { display: none; }
+
+.dash-note { font-family: var(--font-family-monospace); font-size: 11.5px; color: #8c8c98; margin: 0 0 22px; }
+.dash-note.is-warn { color: #f5b041; }
+
+.dash-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 1024px) { .dash-cols { grid-template-columns: 1fr; } }
+
+.dash-panel {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 20px 22px 22px;
+}
+.dash-panel h2 {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: #8289ff; margin: 0 0 14px; padding: 0; background: none; border: 0;
+}
+.dash-subhead {
+  font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: #8c8c98; margin: 18px 0 8px; font-weight: 500;
+}
+.dash-subhead:first-of-type { margin-top: 0; }
+
+.dash-pill {
+  font-family: var(--font-family-monospace); font-size: 9.5px; letter-spacing: 0.08em;
+  padding: 3px 9px; border-radius: 999px; text-transform: none;
+  background: rgba(130, 137, 255, 0.16); color: #8289ff;
+  border: 1px solid rgba(130, 137, 255, 0.35);
+}
+
+.dash-list { list-style: none; margin: 0; padding: 0; }
+.dash-list li { border-bottom: 1px solid var(--hairline-color); }
+.dash-list li:last-child { border-bottom: 0; }
+.dash-list a {
+  display: flex; flex-direction: column; gap: 3px;
+  padding: 11px 0; text-decoration: none; color: #f0f0f3;
+}
+.dash-list a:hover strong { color: #8289ff; }
+.dash-list li.is-unread a strong::before {
+  content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+  background: #8289ff; margin-right: 7px; vertical-align: middle;
+}
+.dash-list-compact a { padding: 9px 0; }
+
+.dash-meta { font-family: var(--font-family-monospace); font-size: 10.5px; color: #8c8c98; }
+.dash-excerpt { font-size: 13px; color: #aeaeba; }
+.dash-empty { font-size: 13.5px; color: #8c8c98; margin: 0; }
+
+.dash-progress {
+  display: block; height: 4px; width: 100%; max-width: 220px;
+  background: rgba(255, 255, 255, 0.09); border-radius: 999px; overflow: hidden; margin: 4px 0 2px;
+}
+.dash-progress span {
+  display: block; height: 100%; border-radius: 999px;
+  background: linear-gradient(90deg, rgba(130, 137, 255, 0.65), #8289ff);
+}

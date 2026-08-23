@@ -1,0 +1,39 @@
+# Keeps the portfolio in step with your GitHub accounts.
+#
+# Runs weekly: imports any new repositories as DRAFTS and refreshes stars,
+# language and last-commit dates on existing projects. Nothing is published
+# automatically — you review new imports in the admin first.
+#
+# Setup: add DATABASE_URL and DJANGO_SECRET_KEY under
+#   GitHub repo -> Settings -> Secrets and variables -> Actions
+
+name: Sync projects from GitHub
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"      # Mondays, 6am UTC
+  workflow_dispatch:          # lets you run it by hand from the Actions tab
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Import new repositories and refresh stats
+        run: |
+          python manage.py import_github ${{ vars.GITHUB_USERNAMES || 'surazzpande Pande-Suraj' }}
+          python manage.py refresh_github
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+          DJANGO_DEBUG: "False"
+          # Raises the GitHub API limit from 60/hr to 5,000/hr. Optional.
+          GITHUB_TOKEN: ${{ secrets.GH_READ_TOKEN }}

@@ -1,0 +1,62 @@
+{% extends "portfolio/base.html" %}
+{% load postmarkup %}
+
+{% block title %}{{ post.title }} — {{ profile.full_name }}{% endblock %}
+{% block description %}{{ post.excerpt }}{% endblock %}
+{% block og_title %}{{ post.title }}{% endblock %}
+{% block og_description %}{{ post.excerpt }}{% endblock %}
+
+{% block content %}
+<article class="page-head">
+  <div class="wrap post-wrap">
+    <a class="back-link" href="{% url 'post_list' %}"><span aria-hidden="true">&larr;</span> All writing</a>
+
+    {% if not post.published %}
+    <p class="draft-banner">This is a draft — only you can see it while logged into the admin.</p>
+    {% endif %}
+
+    <div class="post-meta">
+      <time datetime="{{ post.published_at|date:'Y-m-d' }}">{{ post.published_at|date:"j F Y" }}</time>
+      <span aria-hidden="true">·</span>
+      <span>{{ post.reading_time }} min read</span>
+    </div>
+
+    <h1 class="page-title">{{ post.title }}</h1>
+    <p class="post-lead">{{ post.excerpt }}</p>
+
+    {% if post.tags.all %}
+    <ul class="chips post-tags">
+      {% for tag in post.tags.all %}<li class="chip">{{ tag.name }}</li>{% endfor %}
+    </ul>
+    {% endif %}
+
+    <div class="post-body">{{ post.body|render_post }}</div>
+
+    <div class="post-foot">
+      <p class="muted">Thanks for reading. If you'd like to talk about this — or about a role — <a href="/#contact">get in touch</a>.</p>
+    </div>
+  </div>
+</article>
+
+{% if related %}
+<section class="band">
+  <div class="wrap">
+    <h2 class="sec-title">More writing</h2>
+    <div class="post-grid">
+      {% for other in related %}
+      <article class="card post-card reveal">
+        <div class="post-meta">
+          <time datetime="{{ other.published_at|date:'Y-m-d' }}">{{ other.published_at|date:"j M Y" }}</time>
+          <span aria-hidden="true">·</span>
+          <span>{{ other.reading_time }} min read</span>
+        </div>
+        <h2><a href="{{ other.get_absolute_url }}">{{ other.title }}</a></h2>
+        <p class="post-excerpt">{{ other.excerpt }}</p>
+        <a class="post-more" href="{{ other.get_absolute_url }}">Read <span class="arrow">&rarr;</span></a>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

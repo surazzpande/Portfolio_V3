@@ -1,0 +1,407 @@
+{% load static %}{% load postmarkup %}<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ profile.full_name }} — {{ profile.role_title }}</title>
+<meta name="description" content="{{ profile.seo_description|default:profile.hero_intro|truncatewords:30 }}">
+<meta name="theme-color" content="#0a0a0b">
+<meta property="og:title" content="{{ profile.full_name }} — Software Engineer">
+<meta property="og:description" content="{{ profile.seo_description|default:profile.hero_intro|truncatewords:30 }}">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%238289FF'/%3E%3Ctext x='16' y='22' font-family='system-ui,sans-serif' font-size='15' font-weight='700' fill='%230a0a0b' text-anchor='middle'%3ESP%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="{% static 'portfolio/css/style.css' %}">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header>
+  <nav class="nav" id="nav">
+    <a class="brand" href="#home">
+      <span class="brand-badge">{{ profile.initials }}</span>
+      <span class="brand-name">{{ profile.brand_name }}</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#home">Home</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#education">Education</a></li>
+      {% if exploring %}<li><a href="#exploring">Explore</a></li>{% endif %}
+      <li><a href="{% url 'post_list' %}">Writing</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span>
+    </button>
+  </nav>
+</header>
+
+<main id="main">
+
+<!-- ============ HERO ============ -->
+<section id="home" class="hero">
+  <div class="hero-glow" aria-hidden="true"></div>
+  <div class="hero-3d" id="hero3d" aria-hidden="true"></div>
+  <div class="wrap hero-inner">
+    {% if profile.availability_note %}
+      <p class="pill reveal"><span class="dot"></span>{{ profile.availability_note }}</p>
+    {% endif %}
+    <h1 class="hero-name reveal">{{ profile.full_name }}</h1>
+    <p class="hero-role reveal">{{ profile.role_title }}</p>
+    {% if profile.hero_intro %}<p class="hero-intro reveal">{{ profile.hero_intro }}</p>{% endif %}
+
+    {% if exploring %}
+    <a class="explore-link reveal" href="#exploring">
+      <span>Exploring <span class="arrow">&rarr;</span></span>
+      <small>{{ profile.exploring_tags }}</small>
+    </a>
+    {% endif %}
+
+    <div class="hero-actions reveal">
+      <a class="btn btn-primary" href="#projects">View Projects</a>
+      {% if profile.resume %}<a class="btn" href="{{ profile.resume.url }}" download>Download Resume</a>{% endif %}
+      <a class="btn" href="#contact">Contact Me</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ABOUT ============ -->
+<section id="about" class="band">
+  <div class="wrap">
+    <p class="sec-num reveal">01</p>
+    <p class="sec-kicker reveal">ABOUT</p>
+    <h2 class="sec-title reveal">{{ profile.about_heading }}</h2>
+
+    <div class="about-grid">
+      <div class="about-copy reveal">
+        {% for para in profile.about_paragraphs %}<p>{{ para }}</p>{% endfor %}
+      </div>
+
+      {% if stats %}
+      <div class="stats reveal">
+        {% for stat in stats %}
+        <div class="stat">
+          <span class="stat-value" data-count="{{ stat.value }}">{{ stat.value }}</span>
+          <span class="stat-label">{{ stat.label }}</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<!-- ============ SKILLS ============ -->
+<section id="skills">
+  <div class="wrap">
+    <p class="sec-num reveal">02</p>
+    <p class="sec-kicker reveal">SKILLS</p>
+    <h2 class="sec-title reveal">Tools I build with</h2>
+
+    <div class="skill-grid">
+      {% for cat in skill_categories %}
+      <div class="card skill-card reveal">
+        <h3>{{ cat.name }}</h3>
+        <ul class="chips">
+          {% for skill in cat.skills.all %}<li class="chip">{{ skill.name }}</li>{% endfor %}
+        </ul>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROJECTS ============ -->
+<section id="projects" class="band">
+  <div class="wrap">
+    <p class="sec-num reveal">03</p>
+    <p class="sec-kicker reveal">PROJECTS</p>
+    <h2 class="sec-title reveal">Selected work</h2>
+
+    {% if filter_tags %}
+    <div class="filters reveal" role="group" aria-label="Filter projects by technology">
+      <button class="filter is-active" data-filter="all">All</button>
+      {% for tag in filter_tags %}
+        <button class="filter" data-filter="{{ tag.slug }}">{{ tag.name }}</button>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="project-grid" id="projectGrid">
+      {% for project in projects %}
+      <article class="card project{% if project.featured %} is-featured{% endif %} reveal" data-tags="{{ project.tag_slugs }}">
+        {% if project.featured %}<span class="featured-flag">Featured</span>{% endif %}
+        <h3>{{ project.title }}</h3>
+        {% if project.subtitle %}<p class="project-sub">{{ project.subtitle }}</p>{% endif %}
+
+        {% if project.problem %}
+        <p class="ps"><span class="ps-label">PROBLEM</span> {{ project.problem }}</p>
+        {% endif %}
+        {% if project.solution %}
+        <p class="ps"><span class="ps-label ps-solution">SOLUTION</span> {{ project.solution }}</p>
+        {% endif %}
+
+        <ul class="chips">
+          {% for tag in project.tags.all %}<li class="chip">{{ tag.name }}</li>{% endfor %}
+        </ul>
+
+        {% if project.has_github_stats %}
+        <ul class="gh-stats" aria-label="Repository details">
+          {% if project.gh_language %}<li><span class="gh-dot" aria-hidden="true"></span>{{ project.gh_language }}</li>{% endif %}
+          {% if project.gh_pushed_at %}<li>Updated {{ project.gh_pushed_at|short_since }} ago</li>{% endif %}
+          {% if project.gh_stars %}<li title="Stars">&#9733; {{ project.gh_stars }}</li>{% endif %}
+          {% if project.gh_forks %}<li title="Forks">&#8624; {{ project.gh_forks }}</li>{% endif %}
+        </ul>
+        {% endif %}
+
+        <div class="project-links">
+          {% if project.code_url %}<a href="{{ project.code_url }}" target="_blank" rel="noopener">Code</a>{% endif %}
+          {% if project.live_url %}<a href="{{ project.live_url }}" target="_blank" rel="noopener">Live</a>{% endif %}
+        </div>
+      </article>
+      {% empty %}
+      <p class="muted">No projects published yet.</p>
+      {% endfor %}
+    </div>
+    <p class="no-results muted" id="noResults" hidden>No projects use that technology.</p>
+  </div>
+</section>
+
+<!-- ============ EXPERIENCE ============ -->
+<section id="experience">
+  <div class="wrap">
+    <p class="sec-num reveal">04</p>
+    <p class="sec-kicker reveal">EXPERIENCE</p>
+    <h2 class="sec-title reveal">Where I've worked</h2>
+
+    <div class="timeline">
+      {% for job in experiences %}
+      <div class="tl-item{% if job.is_technical %} is-technical{% endif %} reveal">
+        <span class="tl-marker" aria-hidden="true"></span>
+        <p class="tl-date">{{ job.date_range }}{% if job.location %} · {{ job.location }}{% endif %}</p>
+        <h3>{{ job.role }}</h3>
+        <p class="tl-org">{{ job.organisation }}</p>
+        <ul class="tl-bullets">
+          {% for bullet in job.bullets.all %}
+          <li><span class="tl-arrow" aria-hidden="true">&#9657;</span>{{ bullet.text }}</li>
+          {% endfor %}
+        </ul>
+        {% if job.tags.all %}
+        <ul class="chips">
+          {% for tag in job.tags.all %}<li class="chip">{{ tag.name }}</li>{% endfor %}
+        </ul>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ============ EDUCATION ============ -->
+<section id="education" class="band">
+  <div class="wrap">
+    <p class="sec-num reveal">05</p>
+    <p class="sec-kicker reveal">EDUCATION</p>
+    <h2 class="sec-title reveal">Academic background</h2>
+
+    <div class="edu-grid">
+      {% for edu in education %}
+      <div class="card edu-card reveal">
+        <div class="edu-top">
+          {% if edu.grade %}<span class="grade">{{ edu.grade }}</span>{% endif %}
+          <span class="edu-date">{{ edu.date_range }}</span>
+        </div>
+        <h3>{{ edu.qualification }}</h3>
+        <p class="edu-org">{{ edu.institution }}</p>
+        <ul class="tl-bullets">
+          {% for bullet in edu.bullets.all %}
+          <li><span class="tl-arrow" aria-hidden="true">&#9657;</span>{{ bullet.text }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% if certifications %}
+    <div class="certs reveal">
+      <h3 class="certs-title">Training &amp; certifications</h3>
+      <ul class="cert-list">
+        {% for cert in certifications %}
+        <li class="cert{% if cert.is_in_progress %} is-active{% endif %}">
+          <div class="cert-head">
+            <span class="cert-name">{{ cert.name }}</span>
+            {% if cert.is_in_progress %}
+              <span class="cert-status">In progress</span>
+            {% elif cert.status == 'planned' %}
+              <span class="cert-status is-planned">Planned</span>
+            {% endif %}
+          </div>
+
+          {% if cert.issuer %}<span class="cert-issuer">{{ cert.issuer }}</span>{% endif %}
+
+          {% if cert.is_in_progress %}
+          <div class="cert-progress" role="progressbar" aria-valuenow="{{ cert.clamped_progress }}" aria-valuemin="0" aria-valuemax="100" aria-label="{{ cert.name }} progress">
+            <span class="cert-bar" style="width: {{ cert.clamped_progress }}%"></span>
+          </div>
+          <span class="cert-pct">{{ cert.clamped_progress }}% complete</span>
+          {% elif cert.completed_on %}
+          <span class="cert-date">Completed {{ cert.completed_on|date:"F Y" }}</span>
+          {% endif %}
+
+          {% if cert.note %}<span class="cert-note">{{ cert.note }}</span>{% endif %}
+
+          {% if cert.credential_url %}
+          <a class="cert-verify" href="{{ cert.credential_url }}" target="_blank" rel="noopener">Verify &rarr;</a>
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- ============ EXPLORING ============ -->
+{% if exploring %}
+<section id="exploring">
+  <div class="wrap">
+    <p class="sec-num reveal">06</p>
+    <p class="sec-kicker reveal">EXPLORING</p>
+    <h2 class="sec-title reveal">Where I'm heading next</h2>
+    <p class="sec-lead reveal">Beyond my core full-stack work, these are the areas I'm actively learning and building toward — each one grounded in something I've already done.</p>
+
+    <div class="explore-grid">
+      {% for area in exploring %}
+      <div class="card explore-card reveal">
+        <h3>{{ area.title }}</h3>
+        <p class="explore-ground">{{ area.grounding }}</p>
+        <ul class="chips">
+          {% for topic in area.topics.all %}<li class="chip">{{ topic.name }}</li>{% endfor %}
+        </ul>
+        <p class="explore-status"><span class="dot dot-amber"></span>{{ area.status_label }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- ============ WRITING ============ -->
+{% if recent_posts %}
+<section id="writing">
+  <div class="wrap">
+    <p class="sec-num reveal">07</p>
+    <p class="sec-kicker reveal">WRITING</p>
+    <h2 class="sec-title reveal">Recent notes</h2>
+
+    <div class="post-grid">
+      {% for post in recent_posts %}
+      <article class="card post-card reveal">
+        <div class="post-meta">
+          <time datetime="{{ post.published_at|date:'Y-m-d' }}">{{ post.published_at|date:"j M Y" }}</time>
+          <span aria-hidden="true">·</span>
+          <span>{{ post.reading_time }} min read</span>
+          {% if not post.published %}<span class="draft-flag">Draft</span>{% endif %}
+        </div>
+        <h3><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h3>
+        <p class="post-excerpt">{{ post.excerpt }}</p>
+        <a class="post-more" href="{{ post.get_absolute_url }}">Read <span class="arrow">&rarr;</span></a>
+      </article>
+      {% endfor %}
+    </div>
+
+    <a class="btn all-writing reveal" href="{% url 'post_list' %}">All writing</a>
+  </div>
+</section>
+{% endif %}
+
+<!-- ============ CONTACT ============ -->
+<section id="contact" class="band">
+  <div class="wrap">
+    <p class="sec-num reveal">08</p>
+    <p class="sec-kicker reveal">CONTACT</p>
+    <h2 class="sec-title reveal">Let's build something</h2>
+
+    <div class="contact-grid">
+      <form class="card contact-form reveal" id="contactForm" method="post" action="{% url 'contact' %}" novalidate>
+        {% csrf_token %}
+        <div class="field">
+          <label for="id_name">Name</label>
+          {{ form.name }}
+          <p class="err" data-err="name"></p>
+        </div>
+        <div class="field">
+          <label for="id_email">Email</label>
+          {{ form.email }}
+          <p class="err" data-err="email"></p>
+        </div>
+        <div class="field">
+          <label for="id_message">Message</label>
+          {{ form.message }}
+          <p class="err" data-err="message"></p>
+        </div>
+        {{ form.website }}
+        <button class="btn btn-primary" type="submit" id="submitBtn">Send Message</button>
+        <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
+      </form>
+
+      <div class="contact-details reveal">
+        <div class="contact-item">
+          <span class="contact-label">EMAIL</span>
+          <a href="mailto:{{ profile.email }}">{{ profile.email }}</a>
+        </div>
+        {% if profile.phone %}
+        <div class="contact-item">
+          <span class="contact-label">PHONE</span>
+          <a href="tel:{{ profile.phone|cut:' ' }}">{{ profile.phone }}</a>
+        </div>
+        {% endif %}
+        {% if profile.location %}
+        <div class="contact-item">
+          <span class="contact-label">LOCATION</span>
+          <span>{{ profile.location }}</span>
+        </div>
+        {% endif %}
+        <div class="contact-socials">
+          {% if profile.github_url %}<a href="{{ profile.github_url }}" target="_blank" rel="noopener">GitHub</a>{% endif %}
+          {% if profile.linkedin_url %}<a href="{{ profile.linkedin_url }}" target="_blank" rel="noopener">LinkedIn</a>{% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============ ROBOT + PAGE WIPE ============ -->
+<div class="page-wipe" id="pageWipe" aria-hidden="true"><span></span><span></span><span></span></div>
+
+<div class="robot-dock">
+  <p class="robot-bubble" id="robotBubble" role="status" aria-live="polite"></p>
+  <div class="robot" id="robot" role="button" tabindex="0" aria-label="Say hello to the robot"></div>
+  <button class="robot-toggle" id="robotToggle" type="button" aria-pressed="true" aria-label="Hide the robot" hidden>
+    <span class="robot-toggle-track"><span class="robot-toggle-knob"></span></span>
+    <span class="robot-toggle-text">Robot</span>
+  </button>
+</div>
+
+
+<footer>
+  <div class="wrap footer-inner">
+    <p>&copy; {% now "Y" %} {{ profile.full_name }}. Built with Django, PostgreSQL and vanilla JS.</p>
+    <a href="#home" class="to-top">Back to top &uarr;</a>
+  </div>
+</footer>
+
+<script src="{% static 'portfolio/js/main.js' %}"></script>
+<script src="{% static 'portfolio/js/transitions.js' %}"></script>
+<script type="module" src="{% static 'portfolio/js/robot.js' %}"></script>
+<script type="module" src="{% static 'portfolio/js/hero3d.js' %}"></script>
+</body>
+</html>
